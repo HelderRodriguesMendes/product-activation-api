@@ -9,4 +9,6 @@ public interface ActivationPersistencePort {
     ActivationModel save(ActivationModel activation);
 
     Optional<ActivationModel> findByExternalId(String externalId);
+
+    ActivationModel create(ActivationModel activation);
 }
