@@ -1,3 +1,4 @@
+
 package br.com.helder.productactivation.integration.provider.config;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -7,6 +8,7 @@ import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
 import java.net.http.HttpClient;
+import java.time.Duration;
 
 @Configuration
 public class ActivationProviderConfig {
@@ -18,11 +20,17 @@ public class ActivationProviderConfig {
     ) {
         HttpClient httpClient = HttpClient.newBuilder()
             .version(HttpClient.Version.HTTP_1_1)
+            .connectTimeout(Duration.ofSeconds(2))
             .build();
+
+        JdkClientHttpRequestFactory requestFactory =
+            new JdkClientHttpRequestFactory(httpClient);
+
+        requestFactory.setReadTimeout(Duration.ofSeconds(2));
 
         return builder
             .baseUrl(baseUrl)
-            .requestFactory(new JdkClientHttpRequestFactory(httpClient))
+            .requestFactory(requestFactory)
             .build();
     }
 }

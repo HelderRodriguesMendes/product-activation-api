@@ -1,0 +1,24 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/provider/v1/activate",
+    "bodyPatterns": [
+      {
+        "matchesJsonPath": {
+          "expression": "$.externalId",
+          "equalTo": "EXT-400"
+        }
+      }
+    ]
+  },
+  "response": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "success": false,
+      "message": "Invalid activation request"
+    }
+  }
+}
