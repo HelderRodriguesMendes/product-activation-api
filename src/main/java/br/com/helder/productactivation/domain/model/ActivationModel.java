@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class ActivationRequest {
+public class ActivationModel {
 
     private final UUID id;
     private final String externalId;
@@ -22,7 +22,7 @@ public class ActivationRequest {
     private final Instant createdAt;
     private Instant updatedAt;
 
-    public static ActivationRequest create(
+    public static ActivationModel create(
         String externalId,
         String customerId,
         String productCode
@@ -33,7 +33,7 @@ public class ActivationRequest {
 
         Instant now = Instant.now();
 
-        return new ActivationRequest(
+        return new ActivationModel(
             UUID.randomUUID(),
             externalId,
             customerId,

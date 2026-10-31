@@ -13,8 +13,8 @@ class ActivationRequestTest {
     private static final String CUSTOMER_ID = "CUST-10001";
     private static final String PRODUCT_CODE = "INTERNET-500";
 
-    private ActivationRequest createValidRequest() {
-        return ActivationRequest.create(
+    private ActivationModel createValidRequest() {
+        return ActivationModel.create(
             EXTERNAL_ID,
             CUSTOMER_ID,
             PRODUCT_CODE
@@ -23,7 +23,7 @@ class ActivationRequestTest {
 
     @Test
     void shouldCreateActivationRequestSuccessfully() {
-        ActivationRequest request = createValidRequest();
+        ActivationModel request = createValidRequest();
 
         assertNotNull(request.getId());
         assertEquals(EXTERNAL_ID, request.getExternalId());
@@ -36,8 +36,8 @@ class ActivationRequestTest {
 
     @Test
     void shouldGenerateDifferentIdsForDifferentRequests() {
-        ActivationRequest first = createValidRequest();
-        ActivationRequest second = createValidRequest();
+        ActivationModel first = createValidRequest();
+        ActivationModel second = createValidRequest();
 
         assertNotEquals(first.getId(), second.getId());
     }
@@ -46,11 +46,11 @@ class ActivationRequestTest {
     void shouldThrowExceptionWhenExternalIdIsInvalid() {
         assertAll(
             () -> assertThrows(ActionDomainException.class,
-                () -> ActivationRequest.create(null, CUSTOMER_ID, PRODUCT_CODE)),
+                () -> ActivationModel.create(null, CUSTOMER_ID, PRODUCT_CODE)),
             () -> assertThrows(ActionDomainException.class,
-                () -> ActivationRequest.create("", CUSTOMER_ID, PRODUCT_CODE)),
+                () -> ActivationModel.create("", CUSTOMER_ID, PRODUCT_CODE)),
             () -> assertThrows(ActionDomainException.class,
-                () -> ActivationRequest.create("   ", CUSTOMER_ID, PRODUCT_CODE))
+                () -> ActivationModel.create("   ", CUSTOMER_ID, PRODUCT_CODE))
         );
     }
 
@@ -58,11 +58,11 @@ class ActivationRequestTest {
     void shouldThrowExceptionWhenCustomerIdIsInvalid() {
         assertAll(
             () -> assertThrows(ActionDomainException.class,
-                () -> ActivationRequest.create(EXTERNAL_ID, null, PRODUCT_CODE)),
+                () -> ActivationModel.create(EXTERNAL_ID, null, PRODUCT_CODE)),
             () -> assertThrows(ActionDomainException.class,
-                () -> ActivationRequest.create(EXTERNAL_ID, "", PRODUCT_CODE)),
+                () -> ActivationModel.create(EXTERNAL_ID, "", PRODUCT_CODE)),
             () -> assertThrows(ActionDomainException.class,
-                () -> ActivationRequest.create(EXTERNAL_ID, "   ", PRODUCT_CODE))
+                () -> ActivationModel.create(EXTERNAL_ID, "   ", PRODUCT_CODE))
         );
     }
 
@@ -70,17 +70,17 @@ class ActivationRequestTest {
     void shouldThrowExceptionWhenProductCodeIsInvalid() {
         assertAll(
             () -> assertThrows(ActionDomainException.class,
-                () -> ActivationRequest.create(EXTERNAL_ID, CUSTOMER_ID, null)),
+                () -> ActivationModel.create(EXTERNAL_ID, CUSTOMER_ID, null)),
             () -> assertThrows(ActionDomainException.class,
-                () -> ActivationRequest.create(EXTERNAL_ID, CUSTOMER_ID, "")),
+                () -> ActivationModel.create(EXTERNAL_ID, CUSTOMER_ID, "")),
             () -> assertThrows(ActionDomainException.class,
-                () -> ActivationRequest.create(EXTERNAL_ID, CUSTOMER_ID, "   "))
+                () -> ActivationModel.create(EXTERNAL_ID, CUSTOMER_ID, "   "))
         );
     }
 
     @Test
     void shouldStartProcessingWhenStatusIsPending() {
-        ActivationRequest request = createValidRequest();
+        ActivationModel request = createValidRequest();
 
         request.startProcessing();
 
@@ -90,7 +90,7 @@ class ActivationRequestTest {
 
     @Test
     void shouldCompleteWhenStatusIsProcessing() {
-        ActivationRequest request = createValidRequest();
+        ActivationModel request = createValidRequest();
         request.startProcessing();
 
         request.complete();
@@ -100,7 +100,7 @@ class ActivationRequestTest {
 
     @Test
     void shouldFailWhenStatusIsProcessing() {
-        ActivationRequest request = createValidRequest();
+        ActivationModel request = createValidRequest();
         request.startProcessing();
 
         request.fail();
@@ -110,7 +110,7 @@ class ActivationRequestTest {
 
     @Test
     void shouldNotStartProcessingWhenStatusIsNotPending() {
-        ActivationRequest request = createValidRequest();
+        ActivationModel request = createValidRequest();
         request.startProcessing();
 
         assertThrows(
@@ -123,7 +123,7 @@ class ActivationRequestTest {
 
     @Test
     void shouldNotCompleteWhenStatusIsPending() {
-        ActivationRequest request = createValidRequest();
+        ActivationModel request = createValidRequest();
 
         assertThrows(
             IllegalStatusException.class,
@@ -135,7 +135,7 @@ class ActivationRequestTest {
 
     @Test
     void shouldNotFailWhenStatusIsPending() {
-        ActivationRequest request = createValidRequest();
+        ActivationModel request = createValidRequest();
 
         assertThrows(
             IllegalStatusException.class,
@@ -147,7 +147,7 @@ class ActivationRequestTest {
 
     @Test
     void shouldNotChangeStatusAfterCompletion() {
-        ActivationRequest request = createValidRequest();
+        ActivationModel request = createValidRequest();
         request.startProcessing();
         request.complete();
 
@@ -165,7 +165,7 @@ class ActivationRequestTest {
 
     @Test
     void shouldNotChangeStatusAfterFailure() {
-        ActivationRequest request = createValidRequest();
+        ActivationModel request = createValidRequest();
         request.startProcessing();
         request.fail();
 
