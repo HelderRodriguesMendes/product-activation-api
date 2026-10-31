@@ -16,5 +16,17 @@ services:
       timeout: 5s
       retries: 5
 
+
+  wiremock:
+    image: wiremock/wiremock:3.13.1
+    container_name: product-activation-wiremock
+    ports:
+      - "8089:8080"
+    volumes:
+      - ./wiremock:/home/wiremock
+    command:
+      - "--verbose"
+
+
 volumes:
   postgres_data:
