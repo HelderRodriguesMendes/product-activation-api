@@ -44,6 +44,26 @@ public class ActivationModel {
         );
     }
 
+    public static ActivationModel restore(
+        UUID id,
+        String externalId,
+        String customerId,
+        String productCode,
+        ActivationStatus status,
+        Instant createdAt,
+        Instant updatedAt
+    ) {
+        return new ActivationModel(
+            id,
+            externalId,
+            customerId,
+            productCode,
+            status,
+            createdAt,
+            updatedAt
+        );
+    }
+
     public void startProcessing() {
         if (status != ActivationStatus.PENDING) {
             throw new IllegalStatusException(
