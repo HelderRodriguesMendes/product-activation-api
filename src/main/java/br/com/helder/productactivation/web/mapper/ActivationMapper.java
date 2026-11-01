@@ -5,6 +5,9 @@ import br.com.helder.productactivation.web.dto.response.CreateActivationResponse
 
 public final class ActivationMapper {
 
+    private ActivationMapper() {
+    }
+
     public static CreateActivationResponseDTO toResponse(ActivationModel model) {
         return new CreateActivationResponseDTO(
             model.getId(),

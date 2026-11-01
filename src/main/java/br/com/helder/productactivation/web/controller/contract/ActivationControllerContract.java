@@ -10,19 +10,23 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RequestMapping("/api/v1/requests")
 public interface ActivationControllerContract {
 
-    @Operation(summary = "Create a new Activation")
+    @Operation(summary = "Activation processed successfully")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201",
-            content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                schema = @Schema(implementation = CreateActivationResponseDTO.class))},
-            description = "Activation created successfully"),
+        @ApiResponse(
+            responseCode = "201",
+            description = "Activation created successfully"
+        ),
+        @ApiResponse(
+            responseCode = "200",
+            description = "Existing activation returned (idempotent request)"
+        )
     })
     @PostMapping(
         consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -33,4 +37,31 @@ public interface ActivationControllerContract {
         @RequestBody
         CreateActivationRequestDTO createActivationRequestDTO
     );
+
+
+    @Operation(summary = "Get an activation by ID")
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Activation found",
+            content = @Content(
+                mediaType = MediaType.APPLICATION_JSON_VALUE,
+                schema = @Schema(
+                    implementation = CreateActivationResponseDTO.class
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "Activation not found"
+        )
+    })
+    @GetMapping(
+        value = "/{id}",
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    ResponseEntity<CreateActivationResponseDTO> getActivation(
+        @PathVariable("id") UUID id
+    );
+
 }

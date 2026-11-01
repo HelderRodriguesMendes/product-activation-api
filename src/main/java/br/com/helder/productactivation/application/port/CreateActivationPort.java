@@ -1,9 +1,10 @@
 package br.com.helder.productactivation.application.port;
 
-import br.com.helder.productactivation.domain.model.ActivationModel;
+import br.com.helder.productactivation.application.dto.CreateActivationResult;
 
 public interface CreateActivationPort {
-    ActivationModel createActivation(
+
+    CreateActivationResult createActivation(
         String externalId,
         String customerId,
         String productCode

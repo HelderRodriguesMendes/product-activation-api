@@ -1,4 +1,3 @@
-
 package br.com.helder.productactivation.persistence.adapter;
 
 import br.com.helder.productactivation.application.exception.ActivationAlreadyExistsException;
@@ -13,6 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
@@ -36,6 +36,12 @@ public class ActivationPersistenceAdapter implements ActivationPersistencePort {
 
             throw exception;
         }
+    }
+
+    @Override
+    public Optional<ActivationModel> findById(UUID id) {
+        return repository.findById(id)
+            .map(mapper::toModel);
     }
 
     @Override

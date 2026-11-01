@@ -12,6 +12,7 @@ public enum ExceptionMessages {
 
     EXTERNAL_ID_CONFLICT("An activation request already exists with this externalId and different data."),
     ACTIVATION_NOT_FOUND_AFTER_CONFLICT("Activation not found after unique constraint violation"),
+    ACTIVATION_NOT_FOUND("Activation request not found"),
 
     PRODUCT_CODE_REQUIRED("ProductCode is required"),
     EXTERNAL_ID_REQUIRED("ExternalId is required"),

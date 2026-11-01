@@ -1,6 +1,6 @@
-
 package br.com.helder.productactivation.application.usecase;
 
+import br.com.helder.productactivation.application.dto.CreateActivationResult;
 import br.com.helder.productactivation.application.exception.ActivationAlreadyExistsException;
 import br.com.helder.productactivation.application.exception.ProviderBadRequestException;
 import br.com.helder.productactivation.application.exception.ProviderUnavailableException;
@@ -23,7 +23,7 @@ public class CreateActivationUseCase implements CreateActivationPort {
     private final ActivationProviderPort providerPort;
 
     @Override
-    public ActivationModel createActivation(
+    public CreateActivationResult createActivation(
         String externalId,
         String customerId,
         String productCode
@@ -38,31 +38,46 @@ public class CreateActivationUseCase implements CreateActivationPort {
             persistencePort.findByExternalId(externalId);
 
         if (existing.isPresent()) {
-            return validateIdempotency(
-                existing.get(),
-                customerId,
-                productCode
+            return new CreateActivationResult(
+                validateIdempotency(
+                    existing.get(),
+                    customerId,
+                    productCode
+                ),
+                false
             );
         }
 
         return createAndProcess(activation);
     }
 
-    private ActivationModel createAndProcess(ActivationModel activation) {
+    private CreateActivationResult createAndProcess(
+        ActivationModel activation
+    ) {
         try {
             activation = persistencePort.create(activation);
         } catch (ActivationAlreadyExistsException exception) {
-            return recoverExistingActivation(activation);
+            return new CreateActivationResult(
+                recoverExistingActivation(activation),
+                false
+            );
         }
 
-        return processActivation(activation);
+        return new CreateActivationResult(
+            processActivation(activation),
+            true
+        );
     }
 
-    private ActivationModel recoverExistingActivation(ActivationModel activation) {
+    private ActivationModel recoverExistingActivation(
+        ActivationModel activation
+    ) {
         ActivationModel existing = persistencePort
             .findByExternalId(activation.getExternalId())
             .orElseThrow(() -> new IllegalStateException(
-                ExceptionMessages.ACTIVATION_NOT_FOUND_AFTER_CONFLICT.getMessage()
+                ExceptionMessages
+                    .ACTIVATION_NOT_FOUND_AFTER_CONFLICT
+                    .getMessage()
             ));
 
         return validateIdempotency(
@@ -90,7 +105,9 @@ public class CreateActivationUseCase implements CreateActivationPort {
         return existing;
     }
 
-    private ActivationModel processActivation(ActivationModel activation) {
+    private ActivationModel processActivation(
+        ActivationModel activation
+    ) {
         activation.startProcessing();
         activation = persistencePort.save(activation);
 

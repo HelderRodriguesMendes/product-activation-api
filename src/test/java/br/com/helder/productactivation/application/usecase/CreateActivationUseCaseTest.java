@@ -1,6 +1,6 @@
-
 package br.com.helder.productactivation.application.usecase;
 
+import br.com.helder.productactivation.application.dto.CreateActivationResult;
 import br.com.helder.productactivation.application.exception.ActivationAlreadyExistsException;
 import br.com.helder.productactivation.application.exception.ProviderBadRequestException;
 import br.com.helder.productactivation.application.exception.ProviderTimeoutException;
@@ -53,13 +53,14 @@ class CreateActivationUseCaseTest {
         when(persistencePort.findByExternalId("EXT-001"))
             .thenReturn(Optional.of(existingActivation));
 
-        ActivationModel result = useCase.createActivation(
+        CreateActivationResult result = useCase.createActivation(
             "EXT-001",
             "CUSTOMER-001",
             "PRODUCT-001"
         );
 
-        assertSame(existingActivation, result);
+        assertFalse(result.created());
+        assertSame(existingActivation, result.activation());
 
         verify(persistencePort).findByExternalId("EXT-001");
         verify(persistencePort, never()).create(any(ActivationModel.class));
@@ -94,13 +95,17 @@ class CreateActivationUseCaseTest {
 
         List<ActivationStatus> savedStatuses = mockPersistence();
 
-        ActivationModel result = useCase.createActivation(
+        CreateActivationResult result = useCase.createActivation(
             "EXT-002",
             "CUSTOMER-002",
             "PRODUCT-002"
         );
 
-        assertEquals(ActivationStatus.COMPLETED, result.getStatus());
+        assertTrue(result.created());
+        assertEquals(
+            ActivationStatus.COMPLETED,
+            result.activation().getStatus()
+        );
 
         assertEquals(
             List.of(
@@ -132,13 +137,17 @@ class CreateActivationUseCaseTest {
             .when(providerPort)
             .activate("EXT-400", "CUSTOMER-001", "PRODUCT-001");
 
-        ActivationModel result = useCase.createActivation(
+        CreateActivationResult result = useCase.createActivation(
             "EXT-400",
             "CUSTOMER-001",
             "PRODUCT-001"
         );
 
-        assertEquals(ActivationStatus.FAILED, result.getStatus());
+        assertTrue(result.created());
+        assertEquals(
+            ActivationStatus.FAILED,
+            result.activation().getStatus()
+        );
 
         assertEquals(
             List.of(
@@ -167,13 +176,17 @@ class CreateActivationUseCaseTest {
             .when(providerPort)
             .activate("EXT-500", "CUSTOMER-001", "PRODUCT-001");
 
-        ActivationModel result = useCase.createActivation(
+        CreateActivationResult result = useCase.createActivation(
             "EXT-500",
             "CUSTOMER-001",
             "PRODUCT-001"
         );
 
-        assertEquals(ActivationStatus.FAILED, result.getStatus());
+        assertTrue(result.created());
+        assertEquals(
+            ActivationStatus.FAILED,
+            result.activation().getStatus()
+        );
 
         assertEquals(
             List.of(
@@ -202,13 +215,17 @@ class CreateActivationUseCaseTest {
             .when(providerPort)
             .activate("EXT-TIMEOUT", "CUSTOMER-001", "PRODUCT-001");
 
-        ActivationModel result = useCase.createActivation(
+        CreateActivationResult result = useCase.createActivation(
             "EXT-TIMEOUT",
             "CUSTOMER-001",
             "PRODUCT-001"
         );
 
-        assertEquals(ActivationStatus.FAILED, result.getStatus());
+        assertTrue(result.created());
+        assertEquals(
+            ActivationStatus.FAILED,
+            result.activation().getStatus()
+        );
 
         assertEquals(
             List.of(
@@ -234,13 +251,14 @@ class CreateActivationUseCaseTest {
                 new RuntimeException("Duplicate externalId")
             ));
 
-        ActivationModel result = useCase.createActivation(
+        CreateActivationResult result = useCase.createActivation(
             "EXT-001",
             "CUSTOMER-001",
             "PRODUCT-001"
         );
 
-        assertSame(existingActivation, result);
+        assertFalse(result.created());
+        assertSame(existingActivation, result.activation());
 
         verify(persistencePort, times(2)).findByExternalId("EXT-001");
         verify(persistencePort).create(any(ActivationModel.class));

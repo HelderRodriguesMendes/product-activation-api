@@ -1,4 +1,3 @@
-
 package br.com.helder.productactivation.integration.provider.config;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +14,6 @@ public class ActivationProviderConfig {
 
     @Bean
     public RestClient activationProviderRestClient(
-        RestClient.Builder builder,
         @Value("${activation.provider.base-url}") String baseUrl
     ) {
         HttpClient httpClient = HttpClient.newBuilder()
@@ -28,7 +26,7 @@ public class ActivationProviderConfig {
 
         requestFactory.setReadTimeout(Duration.ofSeconds(2));
 
-        return builder
+        return RestClient.builder()
             .baseUrl(baseUrl)
             .requestFactory(requestFactory)
             .build();
